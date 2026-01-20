@@ -10,6 +10,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { ConvexClientProvider } from "./ConvexClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,7 +57,7 @@ export default function RootLayout({
                 </div>
               </div>
             </header>
-            {children}
+            <ConvexClientProvider>{children}</ConvexClientProvider>
           </ThemeProvider>
         </body>
       </html>
