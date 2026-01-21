@@ -51,7 +51,6 @@ export default function Home() {
             await createTask({
                 name: newTaskName,
                 text: newTaskText,
-                createdBy: user.fullName || user.emailAddresses[0]?.emailAddress || "Unknown",
             });
             toast.success("任务创建成功");
             setNewTaskName("");
@@ -201,9 +200,6 @@ export default function Home() {
                                             <CardTitle className={task.isCompleted ? "line-through" : ""}>
                                                 {task.name}
                                             </CardTitle>
-                                            <CardDescription className="mt-1">
-                                                创建者: {task.createdBy}
-                                            </CardDescription>
                                             <CardDescription className="text-xs">
                                                 {new Date(task.createdAt).toLocaleString("zh-CN")}
                                             </CardDescription>

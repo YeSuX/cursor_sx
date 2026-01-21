@@ -6,7 +6,8 @@ export default defineSchema({
     name: v.string(),
     text: v.string(),
     isCompleted: v.boolean(),
-    createdBy: v.string(),
+    userId: v.string(), // 存储 Clerk 用户 ID
     createdAt: v.number(),
-  }),
+  })
+    .index("by_user", ["userId"]),
 });
