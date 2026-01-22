@@ -12,6 +12,7 @@ import {
 } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from "@/components/ui/sonner";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,14 @@ export default function RootLayout({
           >
             <header className="border-b">
               <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                <nav className="flex items-center gap-6">
+                  <Link href="/" className="font-semibold hover:text-primary transition-colors">
+                    任务管理
+                  </Link>
+                  <Link href="/api-demo" className="text-muted-foreground hover:text-primary transition-colors">
+                    API Demo
+                  </Link>
+                </nav>
                 <div className="flex items-center gap-4">
                   <SignedIn>
                     <UserButton />
