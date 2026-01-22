@@ -14,6 +14,7 @@ export default function ApiDemoPage() {
   const [prompt, setPrompt] = useState("写一个关于人工智能的简短介绍");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usage, setUsage] = useState<{ promptTokens: number; completionTokens: number; totalTokens: number } | null>(null);
 
   // 流式文本生成
   const [streamPrompt, setStreamPrompt] = useState("讲一个关于勇气的短故事");
@@ -45,6 +46,7 @@ export default function ApiDemoPage() {
 
     setLoading(true);
     setResult("");
+    setUsage(null);
 
     try {
       const response = await fetch("/api/generate", {
@@ -62,6 +64,7 @@ export default function ApiDemoPage() {
 
       const data = await response.json();
       setResult(data.text);
+      setUsage(data.usage);
       toast.success("生成成功");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "生成失败");
@@ -102,6 +105,8 @@ export default function ApiDemoPage() {
         throw new Error("无法读取响应流");
       }
 
+      // 使用 toTextStreamResponse() 返回的是简单文本流
+      // 直接解码即可，不需要复杂的 JSON 解析
       let accumulatedText = "";
 
       while (true) {
@@ -111,25 +116,10 @@ export default function ApiDemoPage() {
           break;
         }
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("0:")) {
-            const content = line.slice(2).trim();
-            if (content) {
-              try {
-                const parsed = JSON.parse(content);
-                if (parsed && typeof parsed === "string") {
-                  accumulatedText += parsed;
-                  setStreamResult(accumulatedText);
-                }
-              } catch {
-                // 忽略解析错误
-              }
-            }
-          }
-        }
+        // 直接解码文本内容
+        const textChunk = decoder.decode(value, { stream: true });
+        accumulatedText += textChunk;
+        setStreamResult(accumulatedText);
       }
 
       toast.success("生成完成");
@@ -231,6 +221,11 @@ export default function ApiDemoPage() {
                   <div className="p-4 bg-muted rounded-lg whitespace-pre-wrap">
                     {result}
                   </div>
+                  {usage && (
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Token 用量: {usage.promptTokens} (prompt) + {usage.completionTokens} (completion) = {usage.totalTokens} (total)
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
